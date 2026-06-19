@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Evaluation-specific
+experimental/
+*.partial.csv
+progress.json

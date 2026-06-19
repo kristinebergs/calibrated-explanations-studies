@@ -1,0 +1,183 @@
+cff-version: 1.2.0
+title: "Calibrated Explanations — Evaluation Suite"
+message: >-
+  If you use this evaluation suite, please cite the relevant paper(s)
+  listed under preferred-citation and references below.
+type: software
+authors:
+  - given-names: Helena
+    family-names: Löfström
+    email: helena.lofstrom@ju.se
+    orcid: 'https://orcid.org/0000-0001-9633-0423'
+    affiliation: Jönköping University
+  - given-names: Tuwe
+    family-names: Löfström
+    email: tuwe.lofstrom@ju.se
+    affiliation: 'Jönköping AI Lab, Jönköping University'
+    orcid: 'https://orcid.org/0000-0003-0274-9026'
+  - given-names: Rudy
+    family-names: Matela
+    email: rudy.matela@ju.se
+    affiliation: 'Jönköping AI Lab, Jönköping University'
+repository-code: 'https://github.com/Moffran/calibrated-explanations-evaluations'
+abstract: >-
+  Reproducibility companion to the calibrated-explanations library.
+  Contains all evaluation scripts, Jupyter notebooks, and result artifacts
+  for the published calibrated-explanations studies, covering binary
+  classification, multiclass classification, regression, ensured explanations,
+  guarded explanations, reject integration, conditional fairness, and
+  performance benchmarking.
+keywords:
+  - Calibrated Explanations
+  - Explainable AI
+  - Reproducibility
+  - Evaluation
+  - Conformal Prediction
+  - Venn-Abers
+  - Feature Importance
+license: BSD-3-Clause
+preferred-citation:
+  type: article
+  title: >-
+    Calibrated Explanations: with Uncertainty Information and Counterfactuals
+  authors:
+    - given-names: Helena
+      family-names: Löfström
+    - given-names: Tuwe
+      family-names: Löfström
+    - given-names: Ulf
+      family-names: Johansson
+    - given-names: Cecilia
+      family-names: Sönströd
+  journal: Expert Systems with Applications
+  year: 2024
+  doi: 10.1016/j.eswa.2024.123154
+  url: 'https://linkinghub.elsevier.com/retrieve/pii/S0957417424000198'
+references:
+  - type: article
+    title: >-
+      Investigating the impact of calibration on the quality of explanations
+    authors:
+      - given-names: Helena
+        family-names: Löfström
+      - given-names: Tuwe
+        family-names: Löfström
+      - given-names: Ulf
+        family-names: Johansson
+      - given-names: Cecilia
+        family-names: Sönströd
+    journal: Annals of Mathematics and Artificial Intelligence
+    year: 2023
+    doi: 10.1007/s10472-023-09837-2
+    url: 'https://link.springer.com/article/10.1007/s10472-023-09837-2'
+    notes: Originating paper for the calibrated-explanations idea
+  - type: article
+    title: Calibrated Explanations for Regression
+    authors:
+      - given-names: Tuwe
+        family-names: Löfström
+      - given-names: Helena
+        family-names: Löfström
+      - given-names: Ulf
+        family-names: Johansson
+      - given-names: Cecilia
+        family-names: Sönströd
+      - given-names: Rudy
+        family-names: Matela
+    journal: Machine Learning
+    volume: 114
+    issue: 100
+    year: 2025
+    doi: 10.1007/s10994-024-06642-8
+    url: 'https://link.springer.com/article/10.1007/s10994-024-06642-8'
+  - type: conference-paper
+    title: Calibrated Explanations for Multi-class
+    authors:
+      - given-names: Tuwe
+        family-names: Löfström
+      - given-names: Helena
+        family-names: Löfström
+      - given-names: Ulf
+        family-names: Johansson
+    collection-title: >-
+      Proceedings of the Thirteenth Workshop on Conformal and Probabilistic
+      Prediction and Applications
+    publisher: PMLR
+    volume: 230
+    pages: '175-194'
+    year: 2024
+    url: 'https://raw.githubusercontent.com/mlresearch/v230/main/assets/lofstrom24a/lofstrom24a.pdf'
+  - type: conference-paper
+    title: >-
+      Conditional Calibrated Explanations: Finding a Path Between Bias and Uncertainty
+    authors:
+      - given-names: Helena
+        family-names: Löfström
+      - given-names: Tuwe
+        family-names: Löfström
+    collection-title: >-
+      Explainable Artificial Intelligence. xAI 2024.
+      Communications in Computer and Information Science, vol 2153
+    publisher: Springer, Cham
+    year: 2024
+    doi: 10.1007/978-3-031-63787-2_17
+    url: 'https://link.springer.com/chapter/10.1007/978-3-031-63787-2_17'
+  - type: conference-paper
+    title: >-
+      Fast Calibrated Explanations: Efficient and Uncertainty-Aware Explanations
+      for Machine Learning Models
+    authors:
+      - given-names: Tuwe
+        family-names: Löfström
+      - given-names: Fatima
+        family-names: Rabia Yapicioglu
+      - given-names: Andrea
+        family-names: Stramiglio
+      - given-names: Helena
+        family-names: Löfström
+      - given-names: Fabio
+        family-names: Vitali
+    collection-title: >-
+      Explainable Artificial Intelligence. xAI 2025.
+      Communications in Computer and Information Science, vol 2580
+    publisher: Springer, Cham
+    year: 2024
+    doi: 10.1007/978-3-032-08333-3_16
+    url: 'https://link.springer.com/chapter/10.1007/978-3-032-08333-3_16'
+  - type: article
+    title: >-
+      Classification with reject option: Distribution-free error guarantees
+      via conformal prediction
+    authors:
+      - given-names: Johan
+        family-names: Hallberg Szabadváry
+      - given-names: Tuwe
+        family-names: Löfström
+      - given-names: Ulf
+        family-names: Johansson
+      - given-names: Cecilia
+        family-names: Sönströd
+      - given-names: Ernst
+        family-names: Ahlberg
+      - given-names: Lars
+        family-names: Carlsson
+    journal: Machine Learning with Applications
+    volume: 20
+    issue: 100664
+    year: 2025
+    doi: 10.1016/j.mlwa.2025.100664
+    url: 'https://doi.org/10.1016/j.mlwa.2025.100664'
+    notes: Underpins the conformal reject singleton-error accounting in the reject evaluation suite
+  - type: generic
+    title: >-
+      Ensured: Explanations for Decreasing the Epistemic Uncertainty in Predictions
+    authors:
+      - given-names: Helena
+        family-names: Löfström
+      - given-names: Tuwe
+        family-names: Löfström
+      - given-names: Johan
+        family-names: Hallberg Szabadváry
+    year: 2024
+    url: 'https://arxiv.org/abs/2410.05479'
+    notes: arXiv preprint arXiv:2410.05479. Underpins the ensured-explanations evaluation suite.

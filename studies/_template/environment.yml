@@ -1,0 +1,15 @@
+name: ce-<study-name>
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+    - calibrated-explanations==<VERSION>  # pin to version stated in paper
+    # Add study-specific dependencies below:
+    - matplotlib
+    - scipy
+    - joblib
+    # - lime==<version>   # if LIME comparison is needed
+    # - shap==<version>   # if SHAP comparison is needed
