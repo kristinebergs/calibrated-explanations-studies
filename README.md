@@ -23,7 +23,6 @@ every published result fully reproducible.
 | `studies/multiclass` | Multiclass | PMLR 2024 | [README](studies/multiclass/README.md) |
 | `studies/conditional-fairness` | Classification | xAI 2024 | [README](studies/conditional-fairness/README.md) |
 | `studies/fast-ce` | Classification · Multiclass · Regression | xAI 2025 | [README](studies/fast-ce/README.md) |
-| `studies/reject` | Classification · Multiclass · Regression | MLWA 2025 | [README](studies/reject/README.md) |
 | `studies/ensured` | Classification · Multiclass · Regression | arXiv 2024 | [README](studies/ensured/README.md) |
 
 > New studies go in `studies/` following the `studies/_template/` conventions.
