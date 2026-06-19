@@ -107,9 +107,6 @@ python -m legacy.Classification_Experiment_sota
 # Ensured explanations — quick sanity run
 python -m legacy.ensure.experiment_ensure_binary --limit-datasets 2
 
-# Reject integration — full core suite
-python -m legacy.reject.run_all_guarded --full
-
 # Fast filtering ablation
 python -m legacy.fast_filtering.fast_feature_filtering_ablation_multi --tasks classification --limit 3
 ```
@@ -211,31 +208,15 @@ URL: [arxiv.org/abs/2410.05479](https://arxiv.org/abs/2410.05479)
 See [legacy/ensure/README.md](legacy/ensure/README.md) for prerequisites,
 quick-run commands, and LaTeX export instructions.
 
-### Guarded explanations
-
-Scenarios A–E covering rule usefulness, OOD detection quality, and engineering invariants.
-See [legacy/guarded/README.md](legacy/guarded/README.md) for the full scenario guide
-and paper-use rules.
-
-### Reject integration
-
-**Paper:** Hallberg Szabadváry, J., Löfström, T., Johansson, U., Sönströd, C., Ahlberg, E., and Carlsson, L. —
-*Classification with reject option: Distribution-free error guarantees via conformal prediction*,
-Machine Learning with Applications 20, 100664, 2025.
-DOI: [10.1016/j.mlwa.2025.100664](https://doi.org/10.1016/j.mlwa.2025.100664)
-
-14 scenarios mapping to research questions RQ1–RQ6 and contributions C1–C4.
-See [legacy/reject/README.md](legacy/reject/README.md).
-
-### Performance & fast filtering
+### Fast CE
 
 **Paper:** Löfström, T., Rabia Yapicioglu, F., Stramiglio, A., Löfström, H., and Vitali, F. —
 *Fast Calibrated Explanations: Efficient and Uncertainty-Aware Explanations for Machine Learning Models*,
 xAI 2025, Communications in Computer and Information Science, vol 2580. Springer, Cham.
 DOI: [10.1007/978-3-032-08333-3_16](https://doi.org/10.1007/978-3-032-08333-3_16)
 
-Multi-dataset ablation, feature-overlap fidelity, top-k sweep, and dimensionality scaling.
-See [legacy/fast_filtering/README.md](legacy/fast_filtering/README.md).
+See [legacy/fastCE/README.md](legacy/fastCE/README.md) for prerequisites,
+quick-run commands, and LaTeX export instructions.
 
 ---
 
