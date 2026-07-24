@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for your interest in the Calibrated Explanations Evaluation Suite.
+Thank you for your interest in the Calibrated Explanations studies repository.
 This repository is primarily a reproducibility archive; contributions are most valuable
 in the form of bug reports, dataset corrections, and new evaluation scenarios tied
 to published or under-review work.
@@ -9,10 +9,11 @@ to published or under-review work.
 
 ## Reporting a bug
 
-Use the [Bug Report](.github/ISSUE_TEMPLATE/bug_report.md) issue template.
+Use the [Bug Report](ISSUE_TEMPLATE/bug_report.md) issue template.
 Please include:
 
-- The scenario or script name (e.g. `evaluation.reject.scenario_1_binary_coverage`)
+- The scenario or script name (for example
+  `legacy.reject.scenario_1_binary_coverage`)
 - Operating system and Python version
 - The exact command you ran (from the repo root)
 - Full error output or unexpected result
@@ -21,7 +22,7 @@ Please include:
 
 ## Proposing a new evaluation scenario
 
-Use the [New Scenario](.github/ISSUE_TEMPLATE/new_scenario.md) issue template.
+Use the [New Scenario](ISSUE_TEMPLATE/new_scenario.md) issue template.
 A scenario proposal should state:
 
 - The research question or paper it supports
@@ -34,7 +35,8 @@ A scenario proposal should state:
 ## Submitting a fix or new scenario
 
 1. Fork the repository and create a branch from `main`.
-2. Run from the repo root so `evaluation` is importable:
+2. Follow the selected study README. For a legacy script, run from the
+   repository root so `legacy` is importable:
    ```bash
    python -m legacy.<module> --quick   # for legacy/ scripts
    ```
@@ -46,9 +48,10 @@ A scenario proposal should state:
 ## Code style
 
 - Evaluation scripts are research code; strict formatting is not enforced.
-- Keep new scripts runnable as modules (`python -m evaluation.<path>`) from the repo root.
-- Do not add dependencies beyond what is already in `legacy/requirements.txt` or
-  `legacy/environment.yml` without updating both files.
+- Keep new scripts runnable using the entry-point command documented by their
+  study README.
+- Record new study dependencies in that study's environment definition and
+  update its README in the same change.
 
 ---
 
@@ -63,5 +66,5 @@ A scenario proposal should state:
 
 ## Questions
 
-Open a [GitHub Discussion](https://github.com/Moffran/calibrated-explanations-evaluations/discussions)
+Open a [GitHub Discussion](https://github.com/kristinebergs/calibrated-explanations-studies/discussions)
 or contact the maintainers via the email addresses in [CITATION.cff](CITATION.cff).

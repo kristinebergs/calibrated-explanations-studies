@@ -1,7 +1,7 @@
 cff-version: 1.2.0
-title: "Calibrated Explanations — Evaluation Suite"
+title: "Calibrated Explanations — Studies and Reproducibility"
 message: >-
-  If you use this evaluation suite, please cite the relevant paper(s)
+  If you use this studies repository, please cite the relevant paper(s)
   listed under preferred-citation and references below.
 type: software
 authors:
@@ -19,11 +19,12 @@ authors:
     family-names: Matela
     email: rudy.matela@ju.se
     affiliation: 'Jönköping AI Lab, Jönköping University'
-repository-code: 'https://github.com/Moffran/calibrated-explanations-evaluations'
+repository-code: 'https://github.com/kristinebergs/calibrated-explanations-studies'
 abstract: >-
   Reproducibility companion to the calibrated-explanations library.
-  Contains all evaluation scripts, Jupyter notebooks, and result artifacts
-  for the published calibrated-explanations studies, covering binary
+  Authoritative home for evaluation code, datasets, notebooks, environment
+  definitions, reproduction instructions, and result artifacts for published
+  calibrated-explanations studies, covering binary
   classification, multiclass classification, regression, ensured explanations,
   guarded explanations, reject integration, conditional fairness, and
   performance benchmarking.

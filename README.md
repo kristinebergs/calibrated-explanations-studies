@@ -1,13 +1,16 @@
-# Calibrated Explanations — Evaluation Suite
+# Calibrated Explanations — Studies and Reproducibility
 
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](LICENSE)
 [![calibrated-explanations](https://img.shields.io/badge/library-calibrated--explanations-orange)](https://github.com/Moffran/calibrated_explanations)
 
-Reproducibility companion to [calibrated-explanations](https://github.com/Moffran/calibrated_explanations).
-This repository contains all evaluation code, experiment runners, Jupyter notebooks, and result
-artifacts for the published calibrated-explanations studies.
-The evaluation suite is kept separate from the core library to keep the package lean while making
-every published result fully reproducible.
+Official reproducibility companion to
+[calibrated-explanations](https://github.com/Moffran/calibrated_explanations).
+This repository is authoritative for evaluation code, datasets, notebooks,
+environment definitions, result archives, and study-specific reproduction
+instructions for published Calibrated Explanations research.
+
+Keeping studies separate makes the core package lean while allowing historical
+work to preserve its original environment and CE version requirements.
 
 ---
 
@@ -27,29 +30,14 @@ every published result fully reproducible.
 
 > New studies go in `studies/` following the `studies/_template/` conventions.
 
-### Legacy (migrated from main repo)
-
-The `legacy/` folder contains the original evaluation code as it existed in
-`calibrated_explanations/evaluation/`. See [README § Legacy](README.md#legacy) and
-[legacy/README.md](legacy/README.md) for details.
-
 ---
 
 ## Prerequisites
 
-- Python ≥ 3.8
-- `calibrated-explanations` — **each study was produced with the library version current at
-  time of publication.** The exact version is stated in the corresponding paper (typically as
-  a tag or release number). Install the version referenced in the paper you are reproducing:
-  ```
-  pip install "calibrated-explanations==<version from paper>"
-  ```
-  Installing a different version may change outputs, since explanation behaviour and APIs
-  have evolved across releases.
-
-> **Note:** `calibrated-explanations` itself is not listed in `legacy/requirements.txt` or
-> `legacy/environment.yml` — those files cover only the additional evaluation dependencies
-> (LIME, SHAP, XGBoost, etc.). Install the library separately at the correct version first.
+Prerequisites are study-specific. Use the selected study README for its Python
+version, CE version-selection rule, environment definition, and any additional
+dependencies. Installing a different CE version may change results because APIs
+and explanation behaviour have evolved across releases.
 
 ---
 
@@ -58,101 +46,41 @@ The `legacy/` folder contains the original evaluation code as it existed in
 ### 1. Clone
 
 ```bash
-git clone https://github.com/Moffran/calibrated-explanations-evaluations.git
-cd calibrated-explanations-evaluations
+git clone https://github.com/kristinebergs/calibrated-explanations-studies.git
+cd calibrated-explanations-studies
 ```
 
-### 2. Environment
+### 2. Select a study
 
-**Conda (recommended):**
+Open the README for the paper or result you want to reproduce in
+[`studies/`](studies/). Each study owns its CE version-selection rule,
+environment, datasets, random seeds, entry-point commands, and expected
+artefacts.
 
-```bash
-conda env create -f legacy/environment.yml
-conda activate ce-evaluation
-```
+### 3. Follow the study README
 
-**pip:**
-
-```bash
-python -m venv .venv
-# Windows:
-.\.venv\Scripts\activate
-# Linux / macOS:
-source .venv/bin/activate
-
-pip install "calibrated-explanations==<version from paper>"
-pip install -r legacy/requirements.txt
-```
-
-For notebooks, also install:
-
-```bash
-pip install "calibrated-explanations[viz,notebooks]"
-```
-
-### 3. Verify data
-
-Datasets live in `data/` at the repo root. Binary classification benchmarks read from
-`data/*.csv`; multiclass from `data/Multiclass/multi/`; regression from `data/reg/`.
-No additional download is required — all datasets are versioned in this repository.
-
-### 4. Run an experiment
-
-All scripts use module execution from the repo root so that `legacy` is importable:
-
-```bash
-# Binary classification — state-of-the-art comparison
-python -m legacy.Classification_Experiment_sota
-
-# Ensured explanations — quick sanity run
-python -m legacy.ensure.experiment_ensure_binary --limit-datasets 2
-
-# Fast filtering ablation
-python -m legacy.fast_filtering.fast_feature_filtering_ablation_multi --tasks classification --limit 3
-```
-
-See each sub-README for the full parameter reference.
+Create the documented environment, install the specified historical CE version,
+run the study-specific scripts or notebooks, and compare the outputs with that
+study's bundled artefacts. Do not assume the latest CE release reproduces an
+older paper exactly.
 
 ---
 
 ## Repository Structure
 
 ```
-calibrated-explanations-evaluations/
-│
-├── README.md                   ← you are here
-├── LICENSE                     ← BSD 3-Clause
-├── CITATION.cff                ← machine-readable citation
-├── CONTRIBUTING.md
-├── CODE_OF_CONDUCT.md
-├── CHANGELOG.md
-│
-├── data/                       ← benchmark datasets (versioned)
-│   ├── *.csv                   ← binary classification datasets
-│   ├── Multiclass/             ← multiclass datasets
-│   └── reg/                    ← regression datasets
-│
-└── legacy/                     ← experiment code from calibrated_explanations (see Legacy below)
-    ├── __init__.py
-    ├── environment.yml          ← conda environment
-    ├── requirements.txt         ← pip alternative
-    │
-    ├── Classification_Experiment_sota.py
-    ├── Classification_Experiment_Ablation.py
-    ├── Classification_Experiment_stab_rob.py
-    ├── Classification_Analysis_*.ipynb
-    ├── Classification_plots.ipynb
-    ├── Conditional_Fairness_Experiment.ipynb
-    ├── Conditional_Fairness_Plotting.ipynb
-    │
-    ├── ensure/                  ← ensured explanations study
-    ├── fast_filtering/          ← performance & fast filtering study
-    ├── fastCE/                  ← fast CE acceleration study
-    ├── guarded/                 ← guarded explanations study
-    ├── multiclass/              ← multiclass study
-    ├── regression/              ← regression study
-    ├── reject/                  ← reject integration study
-    └── scripts/                 ← shared helper scripts
+calibrated-explanations-studies/
+|-- README.md
+|-- data/                  # versioned study datasets
+|-- studies/               # one maintained navigation unit per paper
+|   |-- binary-classification/
+|   |-- calibration-quality/
+|   |-- conditional-fairness/
+|   |-- ensured/
+|   |-- fast-ce/
+|   |-- multiclass/
+|   `-- regression/
+`-- legacy/                # provenance-preserving migrated evaluation tree
 ```
 
 ---
@@ -179,7 +107,7 @@ Proceedings of the Thirteenth Workshop on Conformal and Probabilistic Prediction
 PMLR 230:175–194, 2024.
 PDF: [lofstrom24a.pdf](https://raw.githubusercontent.com/mlresearch/v230/main/assets/lofstrom24a/lofstrom24a.pdf)
 
-See [legacy/multiclass/](legacy/multiclass/).
+See the [multiclass study README](studies/multiclass/README.md).
 
 ### Regression
 
@@ -187,7 +115,7 @@ See [legacy/multiclass/](legacy/multiclass/).
 *Calibrated Explanations for Regression*, Machine Learning 114, 100, 2025.
 DOI: [10.1007/s10994-024-06642-8](https://doi.org/10.1007/s10994-024-06642-8)
 
-See [legacy/regression/](legacy/regression/).
+See the [regression study README](studies/regression/README.md).
 
 ### Conditional fairness
 
@@ -196,7 +124,8 @@ See [legacy/regression/](legacy/regression/).
 xAI 2024, Communications in Computer and Information Science, vol 2153. Springer, Cham.
 DOI: [10.1007/978-3-031-63787-2_17](https://doi.org/10.1007/978-3-031-63787-2_17)
 
-Notebooks in [legacy/](legacy/) (`Conditional_Fairness_*.ipynb`).
+See the
+[conditional-fairness study README](studies/conditional-fairness/README.md).
 
 ### Ensured explanations
 
@@ -205,8 +134,7 @@ Notebooks in [legacy/](legacy/) (`Conditional_Fairness_*.ipynb`).
 arXiv:2410.05479, 2024.
 URL: [arxiv.org/abs/2410.05479](https://arxiv.org/abs/2410.05479)
 
-See [legacy/ensure/README.md](legacy/ensure/README.md) for prerequisites,
-quick-run commands, and LaTeX export instructions.
+See the [ensured study README](studies/ensured/README.md).
 
 ### Fast CE
 
@@ -215,8 +143,7 @@ quick-run commands, and LaTeX export instructions.
 xAI 2025, Communications in Computer and Information Science, vol 2580. Springer, Cham.
 DOI: [10.1007/978-3-032-08333-3_16](https://doi.org/10.1007/978-3-032-08333-3_16)
 
-See [legacy/fastCE/README.md](legacy/fastCE/README.md) for prerequisites,
-quick-run commands, and LaTeX export instructions.
+See the [Fast CE study README](studies/fast-ce/README.md).
 
 ---
 
@@ -228,13 +155,14 @@ It is named **legacy** rather than `evaluation` to make clear that:
 
 - This is the original, as-migrated content from the main repo — a faithful copy,
   not a redesigned evaluation framework.
-- Future studies in this repository will live in their own top-level folders
-  alongside `legacy/`, following a cleaner per-study layout.
+- Maintained study navigation lives under `studies/`, following the per-study
+  layout shown above.
 - The `legacy/` module path (`python -m legacy.<module>`) signals to contributors
   that these scripts reflect how evaluation was done in the main repo and may not
   conform to any new conventions introduced here.
 
-Scripts inside `legacy/` are fully functional; "legacy" describes provenance, not quality.
+Use the corresponding study README for current reproduction instructions;
+`legacy` describes provenance and preserves the original migrated layout.
 
 ---
 
