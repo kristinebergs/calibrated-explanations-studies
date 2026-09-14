@@ -20,8 +20,14 @@ conda env create -f environment.yml
 conda activate ce-binary-classification
 ```
 
-> **Pin `calibrated-explanations` to the version stated in the paper** before running.
-> Replace `<VERSION>` in `environment.yml` with that version number.
+The published paper describes **Calibrated Explanations v0.2.3**, and the reproduction
+environment is therefore pinned to `calibrated-explanations==0.2.3`. Repository history
+also shows that some experiments were completed immediately before the release while
+the package identified itself as the development version `0.2.3a`. Version 0.2.3 is the
+appropriate released version for reproducing the published study.
+
+The state-of-the-art comparison uses `lime==0.2.0.1` and `shap==0.44.0`; these versions
+are also pinned in `environment.yml`.
 
 ## Experiments
 
