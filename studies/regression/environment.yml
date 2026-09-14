@@ -6,9 +6,8 @@ dependencies:
   - python=3.11
   - pip
   - pip:
-    - calibrated-explanations==<VERSION>  # pin to version stated in paper
+    - calibrated-explanations==0.3.2
     - matplotlib
     - seaborn
     - scipy
     - joblib
-
