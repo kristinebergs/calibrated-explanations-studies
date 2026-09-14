@@ -9,33 +9,12 @@ DOI: https://doi.org/10.1007/s10472-023-09837-2
 
 ## Provenance
 
-This study has been migrated from the original repository `tuvelofstrom/calibrating-explanations` into the Calibrated Explanations studies repository.
+The original study repository is `tuvelofstrom/calibrating-explanations`. It contains the historical experiment scripts (`experiment_1.py`, `experiment_2.py`, `experiment_utils.py`), statistical analysis notebook, datasets, plots and archived results.
 
-The migrated material includes the original experiment scripts, statistical analysis notebook, and archived CSV results. The original study predates the `calibrated-explanations` package and therefore has no CE package dependency.
+This title-based study directory is now the canonical destination in the Calibrated Explanations studies repository. The archived `experiment_1.csv` result has been copied here; remaining historical artefacts should be copied verbatim from the source repository rather than reconstructed or modernized.
 
-## Experiments
-
-The original scripts are under `experiments/`:
-
-- `experiment_1.py`
-- `experiment_2.py`
-- `experiment_utils.py`
-
-Run them from the repository root so that the shared `data/` directory is available.
-
-## Analysis
-
-`analysis/significance.ipynb` contains the Wilcoxon significance analysis used with the archived result table.
-
-## Results
-
-The archived result files include:
-
-- `results/experiment_1.csv`
-- `results/experiments.csv`
-
-The original repository also contains an Excel rendering of the results. CSV files are preserved here as the canonical machine-readable outputs.
+The study predates the `calibrated-explanations` package and therefore has no CE package dependency.
 
 ## Data
 
-The original scripts use the same binary benchmark datasets that are already versioned in this repository's top-level `data/` directory. They are therefore not duplicated inside this study folder.
+The binary benchmark datasets used by the original scripts are already versioned in this repository's top-level `data/` directory and should not be duplicated here.
