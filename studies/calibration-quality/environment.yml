@@ -6,8 +6,6 @@ dependencies:
   - python=3.11
   - pip
   - pip:
-    - calibrated-explanations==<VERSION>  # pin to version stated in paper
     - matplotlib
     - scipy
     - scikit-learn
-
