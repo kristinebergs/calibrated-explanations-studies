@@ -6,7 +6,7 @@ dependencies:
   - python=3.11
   - pip
   - pip:
-    - calibrated-explanations==<VERSION>  # pin to version stated in paper
+    - calibrated-explanations==0.2.3
     - lime==0.2.0.1
     - shap==0.44.0
     - xgboost
@@ -15,4 +15,3 @@ dependencies:
     - joblib
     - matplotlib
     - ucimlrepo
-
