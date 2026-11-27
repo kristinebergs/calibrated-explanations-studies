@@ -27,6 +27,13 @@ class EnsureRunConfig:
     low_high_percentiles: tuple[int, int] = (5, 95)
 
 
+def mean_counts(rows: list[dict[str, int]]) -> dict[str, float]:
+    """Mean candidate counts for one dataset, setting, and mode."""
+    if not rows:
+        return {}
+    return {key: float(np.mean([row[key] for row in rows])) for key in rows[0]}
+
+
 def selection_score(prediction: np.ndarray, uncertainty: np.ndarray, w: float) -> np.ndarray:
     """Article score: (1-|w|)(1-U)+|w|D_w, D_w=P or 1-P.
 
@@ -324,7 +331,7 @@ def compute_thresholds_from_non_test_targets(
 
 
 def _rules_frame(explanation: Any) -> pd.DataFrame:
-    """Return a normalized DataFrame of alternative rules.
+    """Return a DataFrame of alternative rules and numeric coordinates.
 
     Uses public `get_rules()` representation.
     """
@@ -581,9 +588,9 @@ def _policy_pareto_indexes(
 ) -> list[int]:
     """Return policy-oriented Pareto-frontier indexes for the supplied weight.
 
-    The frontier is computed on the same normalized ranking space used by the
-    ENSURED score so the manuscript's ranking rule and disagreement table are
-    consistent.
+    The frontier is computed on the same coordinate scale as the ranking score.
+    The caller supplies the candidate set; this diagnostic does not implement
+    policy eligibility. At w=0, no directional Pareto screen is applied.
     """
 
     outputs = np.asarray(pred, dtype=float)
@@ -638,14 +645,6 @@ def _policy_pareto_indexes(
             kept_indexes.append(int(candidate_index))
 
     return sorted(kept_indexes)
-
-
-def _pareto_indexes(
-    pred: np.ndarray,
-    low: np.ndarray,
-    high: np.ndarray,
-) -> list[int]:
-    return _policy_pareto_indexes(pred, low, high, 0.5, normalize=False)
 
 
 def timed_call(fn, *args, **kwargs):

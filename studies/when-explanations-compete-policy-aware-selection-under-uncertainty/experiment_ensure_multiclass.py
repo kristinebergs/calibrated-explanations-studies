@@ -3,7 +3,7 @@
 This uses `WrapCalibratedExplainer` in classification mode (multiclass is
 handled automatically in core).
 
-Evaluation-only code (ADR-010).
+This script contains study-specific evaluation code.
 """
 
 from __future__ import annotations
@@ -23,6 +23,8 @@ from sklearn.model_selection import train_test_split
 from common_ensure import (
     EnsureRunConfig,
     ablation_counts,
+    can_run_dataset,
+    mean_counts,
     ranking_validation_for_instance,
     subsample_calibration,
     summarize_ranking_validation,
@@ -30,15 +32,7 @@ from common_ensure import (
     _safe_calibration_pool_size,
     _safe_test_size,
 )
-from common_ensure import can_run_dataset
 from datasets_ensure import MULTICLASS_DATASETS, load_multiclass_dataset
-
-
-def _mean_dict(rows: list[dict[str, int]]) -> dict[str, float]:
-    if not rows:
-        return {}
-    keys = rows[0].keys()
-    return {k: float(np.mean([r[k] for r in rows])) for k in keys}
 
 
 def run_dataset(dataset_name: str, *, config: EnsureRunConfig) -> dict:
@@ -163,14 +157,14 @@ def run_dataset(dataset_name: str, *, config: EnsureRunConfig) -> dict:
 
         dataset_results["by_calibration_size"][int(cal_size)] = {
             "explore": {
-                "counts_mean": _mean_dict(explore_counts),
+                "counts_mean": mean_counts(explore_counts),
                 "time_mean_seconds": float(explore_total_time / max(1, len(explanations))),
                 "ranking_validation": summarize_ranking_validation(
                     explore_validations, weights=config.ranking_weights
                 ),
             },
             "conjugate": {
-                "counts_mean": _mean_dict(conj_counts),
+                "counts_mean": mean_counts(conj_counts),
                 "time_mean_seconds": float(np.mean(conj_add_times)) if conj_add_times else 0.0,
                 "ranking_validation": summarize_ranking_validation(
                     conj_validations, weights=config.ranking_weights
