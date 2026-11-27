@@ -2,7 +2,7 @@
 
 This directory holds the maintained experiment code for this article. The 2024
 *Ensured: Explanations for Decreasing the Epistemic Uncertainty in Predictions*
-study remains in its own directory as historical reproduction material.
+study is archived in `legacy/ensure` as historical reproduction material.
 
 ## Environment and data
 

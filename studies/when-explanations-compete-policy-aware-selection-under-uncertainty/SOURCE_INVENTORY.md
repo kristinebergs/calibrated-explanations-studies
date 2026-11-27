@@ -20,5 +20,10 @@ some contain old paths or unverified empirical claims and were not copied.
 | `experiment_ensure.py` | Absent from ZIP | Leave 2024 original experiment in historical study |
 | Study README and environment | Absent from ZIP | Write article-specific instructions and environment |
 
-The 2024 study and `legacy/ensure` are preserved without edits. The new
-directory is the only maintained implementation for the current article.
+Before removing the duplicate 2024 study directory, every file in its
+`experiments/` folder was verified byte-identical to the corresponding file
+in `legacy/ensure`. Its paper README and environment definition were copied
+byte-identically to `legacy/ensure/PAPER.md` and
+`legacy/ensure/environment.yml`. The new directory is the only maintained
+implementation for the current article; `legacy/ensure` is the historical
+archive for the 2024 work.
