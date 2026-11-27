@@ -11,7 +11,6 @@ from __future__ import annotations
 import argparse
 import pickle
 from pathlib import Path
-import sys
 from typing import Any, Iterable
 
 import numpy as np
@@ -19,11 +18,6 @@ import pandas as pd
 from pandas.api.types import is_numeric_dtype
 
 
-# NOTE: VS Code's Python execution wrapper may not include the repo root on
-# sys.path when running scripts. Add it for consistency.
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
 
 
 CANON_COLUMNS = [
@@ -44,6 +38,19 @@ RANKVAL_COLUMNS = [
     "Spearman(S,P)",
 ]
 
+POLICY_DISAGREEMENT_ROWS = {
+    "u_only_vs_c_only": "U-only vs C-only",
+    "w05_vs_w0": "w=0.5 vs w=0",
+    "w05_vs_w1": "w=0.5 vs w=1",
+    "wm05_vs_w05": "w=-0.5 vs w=0.5",
+    "pareto_first_w05": "Pareto-first vs direct (w=0.5)",
+}
+
+POLICY_DISAGREEMENT_COLUMNS = [
+    "Disagree (%)",
+    "median |dP|",
+    "median |dU|",
+]
 
 def _counts_to_row(counts_mean: dict[str, float]) -> dict[str, float]:
     return {
@@ -553,6 +560,101 @@ def _build_master_pareto_table(
 
     return pd.DataFrame.from_dict(rows, orient="index").reindex(columns=weight_keys)
 
+def _append_metric(values: list[float], value: Any, *, scale: float = 1.0) -> None:
+    if value is None:
+        return
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return
+    if np.isnan(v):
+        return
+    values.append(v * scale)
+
+
+def _iter_policy_ranking_validations(
+    results: dict[str, Any],
+    *,
+    task: str,
+    cal_size: int,
+):
+    """Yield ranking_validation blocks across datasets, settings and modes."""
+    for _, ds_result in results.get("results", {}).items():
+        if _is_skipped(ds_result):
+            continue
+
+        settings: list[dict[str, Any]] = []
+
+        if task in {"binary", "multiclass"}:
+            settings.append(ds_result)
+
+        elif task == "regression":
+            plain = ds_result.get("plain")
+            if plain:
+                settings.append(plain)
+
+            for key in ("p25", "p50", "p75"):
+                prob = ds_result.get("probabilistic", {}).get(key)
+                if prob:
+                    settings.append(prob)
+
+        for setting in settings:
+            by_cal = setting.get("by_calibration_size", {})
+            if int(cal_size) not in by_cal:
+                continue
+
+            for mode in ("explore", "conjugate"):
+                rv = (
+                    by_cal[int(cal_size)]
+                    .get(mode, {})
+                    .get("ranking_validation")
+                )
+                if rv:
+                    yield rv
+
+
+def build_master_policy_disagreement_table(
+    ranking_validations: list[dict[str, Any]],
+    *,
+    show_std: bool,
+) -> pd.DataFrame:
+    """Build the compact IS policy-disagreement table."""
+    collected: dict[str, dict[str, list[float]]] = {
+        key: {col: [] for col in POLICY_DISAGREEMENT_COLUMNS}
+        for key in POLICY_DISAGREEMENT_ROWS
+    }
+
+    for rv in ranking_validations:
+        for key in POLICY_DISAGREEMENT_ROWS:
+            if key == "pareto_first_w05":
+                row = rv.get("pareto_first", {}).get("0.5", {})
+            else:
+                row = rv.get("policy_disagreement", {}).get(key, {})
+
+            _append_metric(
+                collected[key]["Disagree (%)"],
+                row.get("disagreement_pct"),
+                scale=100.0,
+            )
+            _append_metric(
+                collected[key]["median |dP|"],
+                row.get("median_abs_delta_prediction"),
+            )
+            _append_metric(
+                collected[key]["median |dU|"],
+                row.get("median_abs_delta_uncertainty"),
+            )
+
+    rows: dict[str, dict[str, str]] = {}
+    for key, label in POLICY_DISAGREEMENT_ROWS.items():
+        rows[label] = {
+            col: _format_mean_std(collected[key][col], show_std=show_std)
+            for col in POLICY_DISAGREEMENT_COLUMNS
+        }
+
+    return pd.DataFrame.from_dict(rows, orient="index").reindex(
+        columns=POLICY_DISAGREEMENT_COLUMNS
+    )
 
 def main() -> None:
     parser = argparse.ArgumentParser()
@@ -619,6 +721,8 @@ def main() -> None:
     reg_p75_pc_single: pd.DataFrame | None = None
     reg_p75_pc_conj: pd.DataFrame | None = None
 
+    policy_ranking_validations: list[dict[str, Any]] = [] # Collect for master policy disagreement table
+
     # Binary
     binary_path = Path(args.binary)
     if binary_path.exists():
@@ -665,6 +769,23 @@ def main() -> None:
         rv_single = build_ranking_validation_table(
             binary, cal_size=cal_size, mode="explore", show_std=show_std
         )
+
+        policy_ranking_validations.extend(
+            _iter_policy_ranking_validations(
+                binary,
+            task="binary",
+            cal_size=cal_size,
+            )
+        )
+
+        policy_ranking_validations.extend(
+            _iter_policy_ranking_validations(
+                binary,
+                task="binary",
+                cal_size=cal_size,
+            )
+        )
+
         write_table(
             rv_single,
             out_dir / "binary" / "ensure_binary_ranking_validation_single.tex",
@@ -683,6 +804,15 @@ def main() -> None:
         rv_conj = build_ranking_validation_table(
             binary, cal_size=cal_size, mode="conjugate", show_std=show_std
         )
+
+        policy_ranking_validations.extend(
+            _iter_policy_ranking_validations(
+                binary,
+            task="binary",
+            cal_size=cal_size,
+            )
+        )
+
         write_table(
             rv_conj,
             out_dir / "binary" / "ensure_binary_ranking_validation_conjunctive.tex",
@@ -722,6 +852,15 @@ def main() -> None:
         multiclass_agg = build_aggregated_table(
             per_ds_tables, show_std=show_std
         )
+
+        policy_ranking_validations.extend(
+            _iter_policy_ranking_validations(
+                multi,
+                task="multiclass",
+                cal_size=cal_size,
+            )
+        )
+
         write_table(
             multiclass_agg,
             out_dir
@@ -736,6 +875,15 @@ def main() -> None:
         ds_list = _build_dataset_list_table(
             multi["results"], include_classes=True
         )
+
+        policy_ranking_validations.extend(
+            _iter_policy_ranking_validations(
+                multi,
+                task="multiclass",
+                cal_size=cal_size,
+            )
+        )
+
         write_table(
             ds_list,
             out_dir
@@ -749,6 +897,8 @@ def main() -> None:
         rv_single = build_ranking_validation_table(
             multi, cal_size=cal_size, mode="explore", show_std=show_std
         )
+
+
         write_table(
             rv_single,
             out_dir / "multiclass" / "ensure_multiclass_ranking_validation_single.tex",
@@ -766,6 +916,14 @@ def main() -> None:
         rv_conj = build_ranking_validation_table(
             multi, cal_size=cal_size, mode="conjugate", show_std=show_std
         )
+        policy_ranking_validations.extend(
+            _iter_policy_ranking_validations(
+                multi,
+                task="multiclass",
+                cal_size=cal_size,
+            )
+        )
+
         write_table(
             rv_conj,
             out_dir / "multiclass" / "ensure_multiclass_ranking_validation_conjunctive.tex",
@@ -795,6 +953,14 @@ def main() -> None:
                 ds_result["plain"]
             )
             per_ds_tables_plain[ds_name] = table
+
+            policy_ranking_validations.extend(
+                _iter_policy_ranking_validations(
+                    reg,
+                    task="regression",
+                    cal_size=cal_size,
+                )
+            )
             write_table(
                 table,
                 out_dir
@@ -809,6 +975,15 @@ def main() -> None:
         reg_plain_agg = build_aggregated_table(
             per_ds_tables_plain, show_std=show_std
         )
+
+        policy_ranking_validations.extend(
+            _iter_policy_ranking_validations(
+                reg,
+                task="regression",
+                cal_size=cal_size,
+            )
+        )
+
         write_table(
             reg_plain_agg,
             out_dir
@@ -951,11 +1126,29 @@ def main() -> None:
         master_pareto,
         out_dir / "ensure_master_pareto_consistency.tex",
         caption=(
-            "Aggregated Pareto-consistency (\%) of top-ranked candidates "
+            "Aggregated Pareto-consistency (\\%) of top-ranked candidates "
             "across tasks and modes (weights -0.5, 0.0, 0.5)."
         ),
         label="tab:ensure_master_pareto",
     )
+
+    policy_disagreement = build_master_policy_disagreement_table(
+    policy_ranking_validations,
+    show_std=show_std,
+    )
+    write_table(
+        policy_disagreement,
+        out_dir / "ensure_policy_disagreement.tex",
+        caption=(
+            "Policy disagreement of top-ranked candidates across tasks and modes. "
+            "Disagree reports the share of instances where two policies select "
+            "different top-1 candidates. Median |dP| and median |dU| are computed "
+            "only over changed selections."
+        ),
+        label="tab:ensure_policy_disagreement",
+    )
+
+
 
     print(f"Wrote LaTeX tables under {out_dir}")
 

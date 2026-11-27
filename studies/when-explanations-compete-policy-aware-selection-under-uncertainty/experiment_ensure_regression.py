@@ -1,4 +1,4 @@
-"""Run ensured evaluation over all regression datasets.
+﻿"""Run ensured evaluation over all regression datasets.
 
 This script evaluates two regression settings:
 1) Plain regression (no threshold): numeric prediction + conformal interval.
@@ -17,14 +17,6 @@ from copy import deepcopy
 from dataclasses import asdict
 from pathlib import Path
 
-import sys
-
-
-# NOTE: VS Code's Python execution wrapper may not include the repo root on
-# sys.path. Add it so `import evaluation...` works when running this file.
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
 
 import numpy as np
 from calibrated_explanations import WrapCalibratedExplainer
@@ -32,7 +24,7 @@ from crepes.extras import DifficultyEstimator
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
-from evaluation.ensure.common_ensure import (
+from common_ensure import (
     EnsureRunConfig,
     ablation_counts,
     compute_thresholds_from_non_test_targets,
@@ -43,8 +35,8 @@ from evaluation.ensure.common_ensure import (
     _safe_calibration_pool_size,
     _safe_test_size,
 )
-from evaluation.ensure.common_ensure import can_run_dataset
-from evaluation.ensure.datasets_ensure import list_regression_txt_datasets, load_regression_dataset_from_txt
+from common_ensure import can_run_dataset
+from datasets_ensure import list_regression_txt_datasets, load_regression_dataset_from_txt
 
 
 def _mean_dict(rows: list[dict[str, int]]) -> dict[str, float]:
@@ -287,6 +279,7 @@ def main() -> None:
         default=EnsureRunConfig.max_rule_size,
         help="Max conjunction size (default matches EnsureRunConfig)",
     )
+    parser.add_argument("--datasets", nargs="+", help="Dataset names to run (default: all)")
     args = parser.parse_args()
 
     config = EnsureRunConfig(
@@ -297,6 +290,11 @@ def main() -> None:
     )
 
     datasets = list_regression_txt_datasets()
+    if args.datasets:
+        unknown = set(args.datasets) - set(datasets)
+        if unknown:
+            parser.error(f"Unknown datasets: {sorted(unknown)}")
+        datasets = list(dict.fromkeys(args.datasets))
     if args.limit_datasets and args.limit_datasets > 0:
         datasets = datasets[: args.limit_datasets]
 

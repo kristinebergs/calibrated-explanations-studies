@@ -1,9 +1,8 @@
-"""Run ensured evaluation over all multiclass datasets.
+﻿"""Run ensured evaluation over all binary classification datasets.
 
-This uses `WrapCalibratedExplainer` in classification mode (multiclass is
-handled automatically in core).
+Outputs a pickle with aggregated counts/time and ranking-validation summaries.
 
-Evaluation-only code (ADR-010).
+This is evaluation-only code (ADR-010).
 """
 
 from __future__ import annotations
@@ -14,21 +13,12 @@ from copy import deepcopy
 from dataclasses import asdict
 from pathlib import Path
 
-import sys
-
-
-# NOTE: VS Code's Python execution wrapper may not include the repo root on
-# sys.path. Add it so `import evaluation...` works when running this file.
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
 
 import numpy as np
 from calibrated_explanations import WrapCalibratedExplainer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-
-from evaluation.ensure.common_ensure import (
+from common_ensure import (
     EnsureRunConfig,
     ablation_counts,
     ranking_validation_for_instance,
@@ -38,8 +28,11 @@ from evaluation.ensure.common_ensure import (
     _safe_calibration_pool_size,
     _safe_test_size,
 )
-from evaluation.ensure.common_ensure import can_run_dataset
-from evaluation.ensure.datasets_ensure import MULTICLASS_DATASETS, load_multiclass_dataset
+from common_ensure import can_run_dataset
+from datasets_ensure import (
+    BINARY_CLASSIFICATION_DATASETS,
+    load_binary_dataset,
+)
 
 
 def _mean_dict(rows: list[dict[str, int]]) -> dict[str, float]:
@@ -50,10 +43,9 @@ def _mean_dict(rows: list[dict[str, int]]) -> dict[str, float]:
 
 
 def run_dataset(dataset_name: str, *, config: EnsureRunConfig) -> dict:
-    ds = load_multiclass_dataset(dataset_name)
-    ok, reason = can_run_dataset(
-        n_samples=int(ds.X.shape[0]), task="multiclass", config=config, n_classes=int(len(np.unique(ds.y)))
-    )
+    ds = load_binary_dataset(dataset_name)
+    # Skip datasets that are too small to run safely
+    ok, reason = can_run_dataset(n_samples=int(ds.X.shape[0]), task="binary", config=config, n_classes=int(len(np.unique(ds.y))))
     if not ok:
         return {"meta": {"name": ds.name, "skipped": True, "reason": reason}, "by_calibration_size": {}}
 
@@ -61,11 +53,7 @@ def run_dataset(dataset_name: str, *, config: EnsureRunConfig) -> dict:
     test_size = _safe_test_size(n_samples, config.test_size)
 
     x_train, x_test, y_train, y_test = train_test_split(
-        ds.X,
-        ds.y,
-        test_size=test_size,
-        random_state=config.random_state,
-        stratify=ds.y,
+        ds.X, ds.y, test_size=test_size, random_state=config.random_state, stratify=ds.y
     )
 
     n_classes = int(len(np.unique(y_train)))
@@ -134,6 +122,7 @@ def run_dataset(dataset_name: str, *, config: EnsureRunConfig) -> dict:
                 "by_calibration_size": {},
             }
 
+        # Explore (single-feature alternatives)
         explanations, explore_total_time = timed_call(model.explore_alternatives, x_test)
         explore_counts: list[dict[str, int]] = []
         explore_validations: list[dict] = []
@@ -148,6 +137,7 @@ def run_dataset(dataset_name: str, *, config: EnsureRunConfig) -> dict:
                 )
             )
 
+        # Conjugate (with conjunctions)
         conj_counts: list[dict[str, int]] = []
         conj_validations: list[dict] = []
         conj_add_times: list[float] = []
@@ -194,9 +184,7 @@ def main() -> None:
     parser.add_argument(
         "--out",
         type=str,
-        default=str(
-            Path(__file__).resolve().parent / "results" / "results_ensure_multiclass.pkl"
-        ),
+        default=str(Path(__file__).resolve().parent / "results" / "results_ensure_binary.pkl"),
         help="Output pickle path",
     )
     parser.add_argument(
@@ -230,6 +218,7 @@ def main() -> None:
         default=EnsureRunConfig.max_rule_size,
         help="Max conjunction size (default matches EnsureRunConfig)",
     )
+    parser.add_argument("--datasets", nargs="+", help="Dataset names to run (default: all)")
     args = parser.parse_args()
 
     config = EnsureRunConfig(
@@ -239,31 +228,27 @@ def main() -> None:
         max_rule_size=int(args.max_rule_size),
     )
 
-    datasets = list(MULTICLASS_DATASETS)
+    datasets = list(BINARY_CLASSIFICATION_DATASETS)
+    if args.datasets:
+        unknown = set(args.datasets) - set(datasets)
+        if unknown:
+            parser.error(f"Unknown datasets: {sorted(unknown)}")
+        datasets = list(dict.fromkeys(args.datasets))
     if args.limit_datasets and args.limit_datasets > 0:
         datasets = datasets[: args.limit_datasets]
 
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    if out_path.exists():
-        print(f"Loading existing results from {out_path}")
-        with out_path.open("rb") as f:
-            results = pickle.load(f)
-    else:
-        results = {
-            "task": "multiclass",
-            "config": asdict(config),
-            "datasets": datasets,
-            "results": {},
-        }
+    results: dict = {
+        "task": "binary",
+        "config": asdict(config),
+        "datasets": datasets,
+        "results": {},
+    }
 
     for name in datasets:
-        if name in results["results"]:
-            print(f"[ensure-multiclass] Skipping {name} (already done)")
-            continue
-
-        print(f"[ensure-multiclass] {name}")
+        print(f"[ensure-binary] {name}")
         results["results"][name] = run_dataset(name, config=config)
         with out_path.open("wb") as f:
             pickle.dump(results, f)

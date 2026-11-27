@@ -1,5 +1,12 @@
 # Ensured Evaluation: How To Run
 
+> Historical 2024 material. The original experiment files are preserved here
+> byte-for-byte; their `evaluation/ensure` paths describe the former repository
+> layout and are not current run commands. See `PAPER.md` for the original study
+> description and `environment.yml` for its historical dependency definition.
+> The maintained code for *When Explanations Compete* is in its separate study
+> directory.
+
 This folder contains the reproducible experiment runners for the ensured-explanations study.
 
 ## Prerequisites

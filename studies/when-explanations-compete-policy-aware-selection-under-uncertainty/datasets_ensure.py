@@ -1,13 +1,12 @@
 """Dataset registry and loaders for the ensured evaluation.
 
-This module intentionally lives under `evaluation/` to respect ADR-010
-(core vs evaluation split). It provides a stable definition of what
-"all datasets" means for the ensured paper evaluation.
+This registry is reused from the 2024 study for the current article.
+All datasets are read from the repository-level data directory.
 
 The dataset universes are derived from existing evaluation scripts:
 - Binary classification: the 25 datasets enumerated in
-  `evaluation/Classification_Experiment_*.py`.
-- Multiclass: the datasets enumerated in `evaluation/multiclass/Experiment_Multiclass.py`.
+  `historical classification experiment scripts`.
+- Multiclass: the datasets enumerated in `historical multiclass experiment scripts`.
 - Regression: the `.txt` datasets in `data/reg/` used by fast regression
   evaluation scripts.
 
