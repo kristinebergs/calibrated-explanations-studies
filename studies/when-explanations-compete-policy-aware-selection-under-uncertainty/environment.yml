@@ -1,0 +1,12 @@
+name: when-explanations-compete
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - calibrated-explanations==0.11.3
+      - numpy==2.3.5
+      - pandas==3.0.0
+      - scikit-learn==1.8.0
+      - crepes==0.9.0
