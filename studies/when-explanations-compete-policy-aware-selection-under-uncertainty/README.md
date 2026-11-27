@@ -54,7 +54,14 @@ The article's ranking score is implemented in `common_ensure.selection_score`:
 probability coordinates. Plain regression uses a numeric prediction coordinate,
 scaled within each candidate set along with interval width; it is not a
 confidence probability. `ensured` is a candidate filter and adds no new
-coverage guarantee. Eligibility precedes any optional Pareto screening.
+coverage guarantee. The current ranking diagnostic uses all generated
+candidates; it does not apply an explicit eligibility filter. Its optional
+policy-oriented Pareto screen retains candidates that are non-dominated in
+oriented prediction and interval width, and leaves the set unchanged at
+`w=0`. The `pareto` candidate count instead uses CE's public filter; these
+are separate diagnostics. Current single-candidate selection breaks exact
+score ties by input order. Eligibility before screening and tie-aware
+disagreement are part of the reviewer-evidence step.
 
 ## Current limits
 

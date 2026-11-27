@@ -3,12 +3,9 @@
 This registry is reused from the 2024 study for the current article.
 All datasets are read from the repository-level data directory.
 
-The dataset universes are derived from existing evaluation scripts:
-- Binary classification: the 25 datasets enumerated in
-  `historical classification experiment scripts`.
-- Multiclass: the datasets enumerated in `historical multiclass experiment scripts`.
-- Regression: the `.txt` datasets in `data/reg/` used by fast regression
-  evaluation scripts.
+The dataset universes follow the historical classification and multiclass
+experiment registries in this repository. Regression uses local files in
+`data/reg/`, including the two supported CSV files.
 
 All loaders are deterministic and avoid network dependencies.
 """
@@ -159,15 +156,13 @@ def load_multiclass_dataset(name: str) -> LoadedDataset:
     )
 
 
-def list_regression_txt_datasets() -> list[str]:
-    """Return base names for all regression datasets used in ensured eval.
+def list_regression_datasets() -> list[str]:
+    """Return base names for all locally available regression datasets.
 
     Historically, regression benchmarks in this repo are stored as:
     - `.txt` files with a `REGRESSION` target column.
     - a small number of `.csv` files (notably California Housing).
 
-    The name of this function is kept for backwards compatibility with the
-    ensure runner scripts.
     """
 
     reg_dir = REPO_ROOT / "data" / "reg"
@@ -182,7 +177,7 @@ def list_regression_txt_datasets() -> list[str]:
     return sorted(set(names))
 
 
-def load_regression_dataset_from_txt(name: str) -> LoadedDataset:
+def load_regression_dataset(name: str) -> LoadedDataset:
     """Load a regression dataset from `data/reg/`.
 
     Supported inputs:
@@ -191,8 +186,6 @@ def load_regression_dataset_from_txt(name: str) -> LoadedDataset:
       semicolon delimiter.
     - `HousingData.csv` with target `MEDV` and comma delimiter.
 
-    The function name is kept for backwards compatibility with existing
-    ensured evaluation scripts.
     """
 
     reg_dir = REPO_ROOT / "data" / "reg"

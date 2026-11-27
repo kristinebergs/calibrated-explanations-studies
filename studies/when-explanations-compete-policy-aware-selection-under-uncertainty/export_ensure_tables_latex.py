@@ -3,7 +3,7 @@
 Generates per-dataset tables, aggregated tables, a master table combining all
 tasks, and per-task dataset listing tables.
 
-Evaluation-only code (ADR-010).
+This script contains study-specific evaluation code.
 """
 
 from __future__ import annotations
